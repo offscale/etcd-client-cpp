@@ -9,8 +9,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # gen=$(find -type f -name '*.proto' -exec bash -c 'f="protobuf_generate_cpp("; name="${0##*/}"; name="${name%.*}"; name="${name^^}"; printf "%s\n" "${f}${name}_PROTO_SRC ${name}_PROTO_HDRS $0)"' {} \;);
 # echo "$gen"
-# printf 'set(PROTO_SRCS %s)' "$(while read -r s _; do printf '${'"%s"'}\n    ' "$s"; done < <(echo "$gen" | cut -c 23-))"
-# printf 'set(PROTO_HDRS %s)' "$(while read -r s h _; do printf '${'"%s"'}' "$h"; done < <(echo "$gen" | cut -c 23-))"
+# gen=$(echo "$gen" | cut -c 23-);
+# printf 'set(PROTO_SRCS %s)' "$(while read -r s _; do printf '${%s}\n    ' "$s"; done < <(echo "$gen"))"
+# printf 'set(PROTO_HDRS %s)' "$(while read -r s h _; do printf '${%s}\n    ' "$h"; done < <(echo "$gen"))"
 
 protobuf_generate_cpp(RECORD_PROTO_SRC RECORD_PROTO_HDRS ./etcd/wal/walpb/record.proto)
 protobuf_generate_cpp(AUTH_PROTO_SRC AUTH_PROTO_HDRS ./etcd/auth/authpb/auth.proto)
@@ -52,6 +53,7 @@ set(PROTO_HDRS ${RECORD_PROTO_HDRS}
         ${RAFT_INTERNAL_PROTO_HDRS}
         ${ETCDSERVER_PROTO_HDRS}
         )
+
 set_source_files_properties(
         ${AUTH_PROTO_SRCS}
         ${AUTH_PROTO_HDRS}
